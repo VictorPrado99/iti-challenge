@@ -1,6 +1,5 @@
 package com.it.example.password.validator.service;
 
-import com.it.example.password.validator.pojo.PasswordValidatorModel;
 import com.it.example.password.validator.service.regex.validator.*;
 import org.springframework.stereotype.Service;
 
@@ -16,35 +15,32 @@ public class PasswordValidatorService {
     }
 
     private boolean passwordAnalyse(String password) {
-        List<Validator> listThreads = new ArrayList<Validator>();
-        boolean isValid = true;
+        List<Validator> listThreads = new ArrayList<>();
 
         //The simplest rule first, to safeguard processing
-        isValid = passwordLengthRule(password);
+        boolean isValid = passwordLengthRule(password);
 
         if(isValid) {
             feedThreadService(listThreads, password);
 
-            a:
             for (Validator validator :
-                    listThreads)
-            {
+                    listThreads) {
                 try {
                     validator.join();
-                }catch (InterruptedException interruptedException){
-                    isValid = false;
-                    break;
+                } catch (InterruptedException interruptedException) {
+                    if (validator.isValid())
+                        continue;
                 } finally {
                     isValid = validator.isValid();
+                }
 
-                    if(!isValid){
-                        for (Validator val1:
-                             listThreads) {
-                            if(!val1.isInterrupted())
-                                val1.interrupt();
-                        }
-                        break a;
+                if (!isValid) {
+                    for (Validator val1 :
+                            listThreads) {
+                        if (!val1.isInterrupted())
+                            val1.interrupt();
                     }
+                    break;
                 }
             }
         }
@@ -52,7 +48,6 @@ public class PasswordValidatorService {
         return isValid;
     }
 
-    //CharSequence, for abstraction passing as reference for memory safety
     private boolean passwordLengthRule(CharSequence password){
         return password.length() >= 9;
     }

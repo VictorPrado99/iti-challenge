@@ -4,7 +4,10 @@ import com.it.example.password.validator.pojo.PasswordDTO;
 import com.it.example.password.validator.pojo.PasswordValidatorModel;
 import com.it.example.password.validator.service.PasswordValidatorService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class PasswordValidatorApplicationController {
