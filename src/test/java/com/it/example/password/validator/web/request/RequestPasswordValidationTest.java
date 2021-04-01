@@ -14,6 +14,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -25,20 +28,34 @@ class RequestPasswordValidationTest {
 
     @Test
     public void requestValidationFromAcceptedPassword() throws Exception {
-        String password = "";
-        boolean expectedResult = false;
+        Map<String, Boolean> passwordBank = new HashMap<>();
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/validPassword")
-                .content(MvcUtil.asJsonString(new PasswordDTO(password)))
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.content().json(MvcUtil.asJsonString(new PasswordValidatorModel(expectedResult))));
+        passwordBank.put("", false);
+        passwordBank.put("aa", false);
+        passwordBank.put("ab", false);
+        passwordBank.put("AAAbbbCc", false);
+        passwordBank.put("AbTp9!foo", false);
+        passwordBank.put("AbTp9 fok", false);
+        passwordBank.put(" AbTp9! fok", false);
+        passwordBank.put("AbTp9!foA", false);
+        passwordBank.put("Ab*t12", false);
+        passwordBank.put("AbTp9!fok", true);
+        passwordBank.put("QwerT!@#3sd", true);
+        passwordBank.put("ZXcvBG$%54", true);
+
+        for (Map.Entry<String, Boolean> entry : passwordBank.entrySet()) {
+            String password = entry.getKey();
+            Boolean expectedResult = entry.getValue();
+
+            mockMvc.perform(MockMvcRequestBuilders.post("/validPassword")
+                    .content(MvcUtil.asJsonString(new PasswordDTO(password)))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(MockMvcResultMatchers.content().json(MvcUtil.asJsonString(new PasswordValidatorModel(expectedResult))));
+        }
+
 
     }
 
-    @Test
-    public void requestValidationFromNotAcceptedPassword() {
-
-    }
 
 }
