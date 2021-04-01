@@ -44,6 +44,7 @@ class RequestPasswordValidationTest {
         passwordBank.put("ZXcvBG$%54", true);
 
         for (Map.Entry<String, Boolean> entry : passwordBank.entrySet()) {
+
             String password = entry.getKey();
             Boolean expectedResult = entry.getValue();
 
