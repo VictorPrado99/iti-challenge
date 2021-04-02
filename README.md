@@ -32,17 +32,18 @@ implementação pode ser visto lá.
 
 ### Linguagem de Programação
 
-Primeiramente, a tecnologia. Pessoalmente, sempre gostei muito de Java, e gosto bastante do conceito do Kotlin, de ser
-um "filho" do Java. Então meu maior dilema no quesito linguagem, foi entre Java e Kotlin. Java pode ser substituído por
-Kotlin em quase qualquer cenário, e o uso das coroutines do Kotlin, seria um excelente substituto para implementação de
-Threads que utilizei para melhor performance nas validações. Sem contar que os principais frameworks que considerei
-utilizar foram o Spring e o Quarkus, que vou entrar em detalhes posteriormente, ambos podem ser utilizado tanto com o
-Spring, quanto com o Kotlin. Dito tudo isso, no final escolhi Java. Essa escolha, foi feito baseado unicamente, por
-familiaridade. O resultado com ambas as linguagens seriam essencialmente o mesmo em performance, mas apesar de ter
-conhecimento, e já ter feito alguns trabalhos com Web, não consigo dizer que tenho muita experiência ainda. E Kotlin,
-apesar de ser apaixonado pelo conceito da linguagem, nunca cheguei realmente utilizar-la. Por isso, a escolha de Java
-como Linguagem, pois estou familiarizado com a linguagem, e conseguiria focar meu tempo pra tentar polir mais as partes
-que não tenho tanta familiaridade, para tentar demonstrar melhor meu potencial.
+Primeiramente, a tecnologia. Pessoalmente, sempre gostei muito de Java, e gosto bastante do conceito do Kotlin, e sendo
+um "filho" do Java, mantém uma proximidade com os pontos que me agradam no Java. Então meu maior dilema no quesito
+linguagem, foi entre Java e Kotlin. Java pode ser substituído por Kotlin em quase qualquer cenário, e o uso das
+coroutines do Kotlin, seria um excelente substituto para implementação de Threads que utilizei para melhor performance
+nas validações. Sem contar que os principais frameworks que considerei utilizar foram o Spring e o Quarkus, que vou
+entrar em detalhes posteriormente, ambos podem ser utilizado tanto com o Java, quanto com o Kotlin. Dito tudo isso, no
+final escolhi Java. Essa escolha, foi feito baseado unicamente, por familiaridade. O resultado com ambas as linguagens
+seriam essencialmente o mesmo em performance, mas apesar de ter conhecimento, e já ter feito alguns trabalhos com Web,
+não consigo dizer que tenho muita experiência ainda. E Kotlin, apesar de ser apaixonado pelo conceito da linguagem,
+nunca cheguei realmente utilizar-la. Por isso, a escolha de Java como Linguagem, pois estou familiarizado com a
+linguagem, e conseguiria focar meu tempo pra tentar polir mais as partes que não tenho tanta familiaridade, para tentar
+demonstrar melhor meu potencial.
 
 ### Framework
 
@@ -66,27 +67,27 @@ Para ser honesto, o desenvolvimento em sí não tomou muito tempo, o que mais to
 melhor representar meu conhecimento. Ao finalizar, a versão final é quase idêntica a original :( . E segue o seguinte
 fluxo.
 
-- Recebendo POST no endpoint /validPassword
+- Recebendo POST no endpoint <strong>/validPassword</strong>
 - Framework Trata o JSON e transforma em um POJO
 
 - Controller faz os tratamentos iniciais e passa a String com a senha para o microserviço, que retornará um boolean
-  informando se a senha é válida ou não. Não foi desenvolvido como microserviço e nem considerando um container de
-  Docker, porém é facilmente convertível.
+  informando se a senha é válida ou não. Não foi desenvolvido como Serverless e nem considerando um container de Docker,
+  porém é facilmente convertível.
 
-- O microserviço começa seu trabalho de analisar a senha. Primeira validação é a mais simples, se pelo menos existe 9
+- O microserviço começa seu trabalho de analisar a senha. Primeira validação é a mais simples, se existem pelo menos 9
   caracteres. Caso falhe nessa, que é uma simples comparação de tamanho, não é necessário fazer as validações que
   consomem mais recursos.
 
 - A partir deste momento é criado uma lista de validadores, que é uma classe abstrata que terá subclasses que serão
-  implementações únicas de cada tipo de validador. Desta forma é possível expandir regras de validação facilmente, sem
-  precisar mexer em nenhuma implementação existente, o que é uma aplicação que demonstra bem o SOLID, é perfeitamente
+  implementações únicas de cada tipo de validação. Desta forma é possível expandir regras as validação facilmente, sem
+  precisar alterar nenhuma implementação existente, o que é um recurso que demonstra bem o SOLID, é perfeitamente
   extensivel.
 
 - Cada uma das validações, são realizadas em paralelo, para ganhar em performance. E as únicas restrições para as senhas
-  são as informadas na descrição do desafio. Isso significa, que caracteres incomun, como por exemplo, ♫♪↑♂♀. Porém a
-  forma que foi criado, é extremamente simples implementar uma limitação nova, sendo necessário somente a criação nova
-  classe extendendo Validator e Implementando ICheckExistInPassword, o segundo, somente se necessário. Usando a
-  interface, é possível checar por um expressão Regex na senha.
+  são as informadas na descrição do desafio. Isso significa, que caracteres incomun, como por exemplo, ♫♪↑♂♀, não serão
+  considerados incorretos. Porém a forma que foi criado, é extremamente simples implementar uma nova regra, sendo
+  necessário somente a criação nova classe extendendo Validator e Implementando ICheckExistInPassword, o segundo,
+  somente se necessário. Usando a interface, é possível checar por um expressão Regex na senha.
 
   - Outra premissa, é que foi considerado que o retorno, enviaria somente um boolean, não enviando junto informações que
     normalmente são enviadas no objeto de retorno, como Timestamp, entre outros.
@@ -95,10 +96,10 @@ fluxo.
     chegasse encriptada, e fosse necessário chamar outro microserviço para decriptar. Porém nesse caso foi considerado
     somente que a senha já estaria legível, a unica criptografia seria do próprio https
 
-- Após as Threads finalizarem seu ciclo de vida, é validado se todos as subvalidações retornaram verdadeiro, caso sim o
-  retorno será verdadeiro, pois trata-se de uma senha válida. Caso uma delas em algum momento retornar falso, o processo
-  já é abortado para economizar recursos, as Threads são interrompidas, caso necessário, e o retorno é falso, pois
-  trata-se de uma senha inválida.
+- Após as Threads finalizarem seu ciclo de vida, é validado se todos as regras retornaram verdadeiro, caso sim o retorno
+  será verdadeiro, pois trata-se de uma senha válida. Caso uma delas em algum momento retornar falso, o processo já é
+  abortado para economizar recursos, as Threads são interrompidas, caso necessário, e o retorno é falso, pois trata-se
+  de uma senha inválida.
 
 - Por último com o retorno, é montado o objeto para retornar. E o próprio Spring o converte para JSON para reponder o
   POST.
