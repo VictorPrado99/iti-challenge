@@ -1,7 +1,12 @@
 package com.it.example.password.validator.service.regex.validator;
 
-/** Class to validate if exist at least a special character in the password */
-public class SpecialCharacterValidator extends Validator {
+import com.it.example.password.validator.service.regex.validator.baseValidator.ICheckExistInPassword;
+import com.it.example.password.validator.service.regex.validator.baseValidator.Validator;
+
+/**
+ * Class to validate if exist at least a special character in the password
+ */
+public class SpecialCharacterValidator extends Validator implements ICheckExistInPassword {
 
     public SpecialCharacterValidator(String password) {
         super(password);
@@ -9,6 +14,6 @@ public class SpecialCharacterValidator extends Validator {
 
     @Override
     protected void passwordAnalyse() {
-        isValid = checkExistInPassword("[!@#$%^&*()-+]");
+        isValid = checkExistInPassword("[!@#$%^&*()-+]", password);
     }
 }

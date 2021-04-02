@@ -1,7 +1,12 @@
 package com.it.example.password.validator.service.regex.validator;
 
-/** Class to validate if exist at least a uppercase character in the password */
-public class UpperCaseValidator extends Validator{
+import com.it.example.password.validator.service.regex.validator.baseValidator.ICheckExistInPassword;
+import com.it.example.password.validator.service.regex.validator.baseValidator.Validator;
+
+/**
+ * Class to validate if exist at least a uppercase character in the password
+ */
+public class UpperCaseValidator extends Validator implements ICheckExistInPassword {
 
     public UpperCaseValidator(String password) {
         super(password);
@@ -9,6 +14,6 @@ public class UpperCaseValidator extends Validator{
 
     @Override
     protected void passwordAnalyse() {
-        isValid = checkExistInPassword("[A-Z]");
+        isValid = checkExistInPassword("[A-Z]", password);
     }
 }
